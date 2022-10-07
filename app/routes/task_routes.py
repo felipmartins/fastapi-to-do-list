@@ -1,25 +1,20 @@
-from datetime import datetime
-from fastapi import FastAPI
+from fastapi import APIRouter
+from app.models.task_model import Task
+from app.models.db import engine
 from sqlmodel import Session, select
-from db import engine
-from task_model import Task
+from datetime import datetime
 
-app = FastAPI()
-
-
-@app.get("/", tags=["Home"])
-async def home():
-    return {"message": "You're on root route, please visit /docs to see all routes or /tasks to see all tasks"}
+router = APIRouter(prefix="/tasks", tags=["Task"])
 
 
-@app.get("/tasks", tags=["Task"])
+@router.get("")
 async def list_tasks():
     with Session(engine) as session:
         tasks = select(Task)
         return list(session.exec(tasks))
 
 
-@app.post("/tasks", tags=["Task"], status_code=201)
+@router.post("", status_code=201)
 async def add_new_task(req_task: Task):
     with Session(engine) as session:
         session.add(req_task)
@@ -28,7 +23,7 @@ async def add_new_task(req_task: Task):
         return {"created": req_task}
 
 
-@app.put("/tasks/{id}", tags=["Task"], status_code=200)
+@router.put("/{id}", status_code=200)
 async def edit_task(id: int, req_task: Task):
     with Session(engine) as session:
         query = select(Task).where(Task.id == id)
@@ -43,7 +38,7 @@ async def edit_task(id: int, req_task: Task):
         return {"edited": task}
 
 
-@app.delete("/tasks/{id}", tags=["Task"], status_code=200)
+@router.delete("/{id}", status_code=200)
 async def delete_task(id: int):
     with Session(engine) as session:
         query = select(Task).where(Task.id == id)

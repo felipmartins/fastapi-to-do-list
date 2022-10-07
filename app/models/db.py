@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, create_engine, Session
-from task_model import Task
+from app.models.task_model import Task
 
 sqlite_name = "database.db"
 sqlite_url = f"sqlite:///{sqlite_name}"

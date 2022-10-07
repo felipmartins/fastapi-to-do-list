@@ -1,5 +1,7 @@
 from fastapi import FastAPI
+from sqlmodel import Session, select
 from db import engine
+from task_model import Task
 
 app = FastAPI()
 
@@ -11,4 +13,6 @@ async def home():
 
 @app.get("/tasks", tags=["Home"])
 async def list_tasks():
-    return {"message": "All tasks"}
+    with Session(engine) as session:
+        tasks = select(Task)
+        return list(session.exec(tasks))

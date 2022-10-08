@@ -7,7 +7,7 @@ from datetime import datetime
 router = APIRouter(prefix="/tasks", tags=["Task"])
 
 
-@router.get("")
+@router.get("", status_code=200)
 async def list_tasks():
     with Session(engine) as session:
         tasks = select(Task)
